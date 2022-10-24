@@ -9,6 +9,8 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 # Implement pagination to get data per page
+
+
 def paginate_questions(request, selection):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * QUESTIONS_PER_PAGE
@@ -17,7 +19,8 @@ def paginate_questions(request, selection):
     current_questions = questions[start:end]
     return current_questions
 
-# Done
+    # Done
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -30,14 +33,16 @@ def create_app(test_config=None):
     CORS(app, resources={r"*/api/*": {"origins": "*"}})
 
     # Done
-    
+
     """
     @TODO: Use the after_request decorator to set Access-Control-Allow
     """
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        response.headers.add('Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers',
+                             'Content-Type, Authorization')
+        response.headers.add('Access-Control-Allow-Headers',
+                             'GET, POST, PATCH, DELETE, OPTIONS')
         return response
 
     # Done
@@ -47,7 +52,23 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
+    # View all availabe categories
+    @app.route('/categories', methods=['GET'])
+    def show_categories():
+        categories = Category.query.all()
+        # Handle error
+        if len(categories) == 0:
+            abort(404)
 
+        categoriesDict = {}
+        for c in categories:
+            categoriesDict[c.id] = c.type
+        # print(categoriesDict)
+        return jsonify({
+            'success': True,
+            'categories': categoriesDict})
+
+    # Done
 
     """
     @TODO:
@@ -61,6 +82,28 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+    # Get 10 paginated questions, total questions, all categories, and current category
+    @app.route('/questions', methods=['GET'])
+    def view_questions():
+        selection = Question.query.all()
+        questionsShowed = paginate_questions(request, selection)
+        if len(questionsShowed) == 0:
+            abort(404)
+
+        categories = Category.query.all()
+        categoriesDict = {}
+        for c in categories:
+            categoriesDict[c.id] = c.type
+
+        return jsonify({
+            'success': True,
+            'questions': questionsShowed,
+            'totalQuestions': len(selection),
+            'categories': categoriesDict,
+            'currentCategory': None
+        })
+
+        # Done
 
     """
     @TODO:
@@ -69,7 +112,7 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
-
+    
     """
     @TODO:
     Create an endpoint to POST a new question,
@@ -120,4 +163,3 @@ def create_app(test_config=None):
     """
 
     return app
-
