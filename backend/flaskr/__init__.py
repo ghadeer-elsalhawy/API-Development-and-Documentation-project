@@ -8,6 +8,17 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+# Implement pagination to get data per page
+def paginate_questions(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+    questions = [question.format() for question in selection]
+    current_questions = questions[start:end]
+    return current_questions
+
+# Done
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -17,6 +28,8 @@ def create_app(test_config=None):
     @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
     CORS(app, resources={r"*/api/*": {"origins": "*"}})
+
+    # Done
     
     """
     @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -26,7 +39,9 @@ def create_app(test_config=None):
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         response.headers.add('Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTIONS')
         return response
-        
+
+    # Done
+
     """
     @TODO:
     Create an endpoint to handle GET requests
