@@ -30,7 +30,7 @@ def create_app(test_config=None):
     """
     @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
-    CORS(app, resources={r"*/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # Done
 
@@ -205,7 +205,7 @@ def create_app(test_config=None):
         chosenCategory = Category.query.filter_by(id=id).one_or_none()
         if chosenCategory is None:
             abort(404)
-        questions = Question.query.filter_by(category=str(id)).all()
+        questions = Question.query.filter_by(category=id).all()
         shownQuestions = paginate_questions(request, questions)
 
         return jsonify({
@@ -229,7 +229,7 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
-    @app.route('/quizzez', methods=['POST'])
+    @app.route('/quizzes', methods=['POST'])
     def next_quiz():
         body = request.get_json()
         cat = body.get('quiz_category')
