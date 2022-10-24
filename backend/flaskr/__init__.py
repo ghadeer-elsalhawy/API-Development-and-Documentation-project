@@ -136,7 +136,7 @@ def create_app(test_config=None):
     of the questions list in the "List" tab.
     """
 
-    @app.route('questions', methods=['POST'])
+    @app.route('/questions', methods=['POST'])
     def add_question():
         addedQuestion = request.get_json()
         q = addedQuestion.get('question')
@@ -146,7 +146,8 @@ def create_app(test_config=None):
         if (addedQuestion, q, ans, dif, cat) == None:
             abort(422)
         try:
-            new_question = Question(question=q, answer=ans, difficulty=dif, category=cat)
+            new_question = Question(
+                question=q, answer=ans, difficulty=dif, category=cat)
             new_question.insert()
             selection = Question.query.all()
             allQuestions = paginate_questions(request, selection)
@@ -171,6 +172,24 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
+
+    @app.route("/search", methods=['POST'])
+    def search_question():
+        term = request.args.get('search')
+        selection = Question.query.filter(
+            Question.question.ilike(f'%{term}%')).all()
+        search_questions = paginate_questions(request, selection)
+        if term is None:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'questions': list(search_questions),
+            'totalQuestions': len(selection),
+            'currentCategory': None
+        })
+
+    # Done
 
     """
     @TODO:
