@@ -175,7 +175,7 @@ def create_app(test_config=None):
 
     @app.route("/search", methods=['POST'])
     def search_question():
-        term = request.args.get('search')
+        term = request.args.get('searchTerm')
         selection = Question.query.filter(
             Question.question.ilike(f'%{term}%')).all()
         search_questions = paginate_questions(request, selection)
@@ -199,6 +199,23 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+
+    @app.route('/categories/<int:id>/questions', methods=['GET'])
+    def search_category(id):
+        chosenCategory = Category.query.filter_by(id=id).one_or_none()
+        if chosenCategory is None:
+            abort(404)
+        questions = Question.query.filter_by(category=str(id)).all()
+        shownQuestions = paginate_questions(request, questions)
+
+        return jsonify({
+            'success': True,
+            'questions': shownQuestions,
+            'totalQuestions': len(questions),
+            'currentCategory': chosenCategory.type
+        })
+        
+    # Done
 
     """
     @TODO:
