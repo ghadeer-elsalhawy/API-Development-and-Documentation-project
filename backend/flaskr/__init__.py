@@ -214,7 +214,7 @@ def create_app(test_config=None):
             'totalQuestions': len(questions),
             'currentCategory': chosenCategory.type
         })
-        
+
     # Done
 
     """
@@ -229,6 +229,29 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
+    @app.route('/quizzez', methods=['POST'])
+    def next_quiz():
+        body = request.get_json()
+        cat = body.get('quiz_category')
+        previous = body.get('previous_questions')
+        if cat is None or previous is None:
+            abort(400)
+
+        if cat['id'] == 0:
+            questions = Question.query.filter(
+                Question.id.notin_((previous))).all()
+        else:
+            questions = Question.query.filter_by(category=cat['id']).filter(
+                Question.id.notin_((previous))).all()
+
+        nextQuestion = questions[random.randrange(
+            0, len(questions), 1)].format() if len(questions) > 0 else None
+
+        return jsonify({
+            'success': True,
+            'question': nextQuestion})
+
+    # Done
     """
     @TODO:
     Create error handlers for all expected errors
