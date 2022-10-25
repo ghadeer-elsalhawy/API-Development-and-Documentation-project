@@ -71,25 +71,235 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
 
-### Documentation Example
+### GET `/categories`
+  * Fetches a dictionary of all available categories
+  * Request arguments: None
+  * Response:
+    `categories`: Dictionary of categories
+  * Example:
+    ```python
+    {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+    }
+    ```
+    
+### GET `/questions`
+  * Fetches a paginated dictionary of questions of all categories
+  * Request arguments: `page` page number
+  * Response: 
+    `questions`: Dictionary of questions
+    `totalQuestions`: Total number of questions
+    `categories`: Dictionary of all shown categories
+  * Example:
+    ```python
+    {
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "questions": [
+        {
+            "answer": "Maya Angelou",
+            "category": 4,
+            "difficulty": 2,
+            "id": 5,
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+        },
+        {
+            "answer": "Muhammad Ali",
+            "category": 4,
+            "difficulty": 1,
+            "id": 9,
+            "question": "What boxer's original name is Cassius Clay?"
+        },
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        {
+            "answer": "Tom Cruise",
+            "category": 5,
+            "difficulty": 4,
+            "id": 4,
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        },
+        {
+            "answer": "Edward Scissorhands",
+            "category": 5,
+            "difficulty": 3,
+            "id": 6,
+            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+        },
+        {
+            "answer": "Brazil",
+            "category": 6,
+            "difficulty": 3,
+            "id": 10,
+            "question": "Which is the only team to play in every soccer World Cup tournament?"
+        },
+        {
+            "answer": "Uruguay",
+            "category": 6,
+            "difficulty": 4,
+            "id": 11,
+            "question": "Which country won the first ever soccer World Cup in 1930?"
+        },
+        {
+            "answer": "George Washington Carver",
+            "category": 4,
+            "difficulty": 2,
+            "id": 12,
+            "question": "Who invented Peanut Butter?"
+        },
+        {
+            "answer": "Lake Victoria",
+            "category": 3,
+            "difficulty": 2,
+            "id": 13,
+            "question": "What is the largest lake in Africa?"
+        },
+        {
+            "answer": "The Palace of Versailles",
+            "category": 3,
+            "difficulty": 3,
+            "id": 14,
+            "question": "In which royal palace would you find the Hall of Mirrors?"
+        }
+    ],
+    "totalQuestions": 49}
+    ```
 
-`GET '/api/v1.0/categories'`
+### DELETE `/questions/<int:id>`
+  * Deletes a question based on the given id
+  * Request arguments: `id` integer of the question id
+  * Response:
+    `success` bool to acknowledge that the deletion was successful
+  * Example:
+    ```python
+    {'success': True}
+    ```
+    
+### POST `/questions`
+  * Add a new question to the database
+  * Request arguments:
+    `question` string of the question
+    `answer` string of the answer to the question
+    `difficulty` integer of the difficulty level
+    `category` integer of the category id
+  * Response:
+    `success` bool to acknowledge that the question was added successfully
+    `totalQuestions` Number of all questions
+    `questions` Dictionary of all questions
+  * Example:
+    ```python
+    {
+       'success': True,
+       'totalQuestions': len(allQuestions),
+       'questions': allQuestions
+    }
+    ```
+    
+### POST `/search`
+  * Search for questions that have the search term
+  * Request arguments: 
+    `searchTerm` string of the saearch term the user has provided
+  * Response:
+    `success` Bool to acknowledge success of the request
+    `questions` All the questions that match the search term
+    `totalQuestions` Number of result questions
+  * Example:
+    ```python
+    {
+    'success': True,
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer',
+            'difficulty': 5,
+            'category': 5
+        },
+    ],
+    'totalQuestions': 1
+    }
+    ```
+    
+### GET `/categories/<int:id>/questions`
+  * Get questions based on category
+  * Request arguments:
+    `id` integer of the category id
+  * Response:
+    `success` Bool to acknowledge success of the request
+    `currentCategory` The slected category
+    `questions` Questions of the selected category
+    `totalQuestions` Total number of questions
+  * Example:
+    ```python
+    {
+    "currentCategory": "Science",
+    "questions": [
+        {
+            "answer": "The Liver",
+            "category": 1,
+            "difficulty": 4,
+            "id": 20,
+            "question": "What is the heaviest organ in the human body?"
+        },
+        {
+            "answer": "Alexander Fleming",
+            "category": 1,
+            "difficulty": 3,
+            "id": 21,
+            "question": "Who discovered penicillin?"
+        },
+        {
+            "answer": "Blood",
+            "category": 1,
+            "difficulty": 4,
+            "id": 22,
+            "question": "Hematology is a branch of medicine involving the study of what?"
+        }
+    ],
+    "success": true,
+    "totalQuestions": 3
+    }
+    ```
 
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
-
-```json
-{
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
-}
-```
-
+### POST `/quizzes`
+  * Sends a post request in order to get the next question
+  * Request arguments: 
+    `quiz_category` Category of the quiz questions
+    `previous_questions` List of all ids of previous questions
+  * Response:
+    `success` Acknowledge success of request
+    `question` Next question
+  * Example:
+    ```python
+    {
+    "question": {
+    "answer": "The Liver", 
+    "category": 1, 
+    "difficulty": 4, 
+    "id": 20, 
+    "question": "What is the heaviest organ in the human body?"
+    }, 
+    "success": true
+    }
+    ```
+  
+  
 ## Testing
 
 Write at least one test for the success and at least one error behavior of each endpoint using the unittest library.
