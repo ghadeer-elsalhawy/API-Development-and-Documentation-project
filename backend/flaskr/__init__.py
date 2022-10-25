@@ -82,7 +82,7 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
-    # Get 10 paginated questions, total questions, all categories, and current category
+    # Get 10 paginated questions, total questions, all categories
     @app.route('/questions', methods=['GET'])
     def view_questions():
         selection = Question.query.all()
